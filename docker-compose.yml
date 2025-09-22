@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    container_name: odoo_db_1
+    env_file: .env
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  odoo:
+    image: ghcr.io/minhmaxsolution/odoo-community-sandbox:latest
+    container_name: odoo_odoo18_1
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - ./odoo.conf:/etc/odoo/odoo.conf:ro
+      - odoo-data:/var/lib/odoo
+    restart: unless-stopped
+
+volumes:
+  pg-data:
+  odoo-data:
